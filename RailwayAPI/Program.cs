@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
@@ -14,10 +15,15 @@ builder.Services.AddFusionCache()
     .WithSerializer(new FusionCacheSystemTextJsonSerializer())
     .WithDistributedCache(new RedisCache(new RedisCacheOptions { Configuration = redisConnection }));
 
+builder.Services.AddHealthChecks()
+    .AddRedis(redisConnection);;
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+app.Logger.LogInformation("This is the REDIS_CONNECTION {RedisConnection}", redisConnection);
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -36,6 +42,8 @@ WeatherForecast[] GetWeatherForecast() => Enumerable.Range(1, 5).Select(index =>
     .ToArray();
 
 
+app.MapHealthChecks("/health");
+
 app.MapGet("/weatherforecast", (IFusionCache cache) =>
     {
         var forecast = cache.GetOrSet("products", _ => GetWeatherForecast());
@@ -46,6 +54,7 @@ app.MapGet("/weatherforecast", (IFusionCache cache) =>
     .WithOpenApi();
 
 app.Run();
+
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
