@@ -1,4 +1,3 @@
-using System.Threading.RateLimiting;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using ZiggyCreatures.Caching.Fusion;
 using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
@@ -29,7 +28,7 @@ app.UseSwaggerUI();
 
 var summaries = new[]
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching", "Blazing"
 };
 
 WeatherForecast[] GetWeatherForecast() => Enumerable.Range(1, 5).Select(index =>
